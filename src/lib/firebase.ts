@@ -2,16 +2,28 @@ import admin from "firebase-admin";
 import fs from "fs";
 import path from "path";
 
-// Initialize Firebase Admin SDK
-// Uses a service account JSON file specified via FIREBASE_SERVICE_ACCOUNT_PATH env var,
-// or falls back to GOOGLE_APPLICATION_CREDENTIALS, or Application Default Credentials.
+
 function getFirebaseApp(): admin.app.App {
     if (admin.apps.length > 0) {
         return admin.apps[0]!;
     }
 
-    const serviceAccountPath = process.env.FIREBASE_SERVICE_ACCOUNT_PATH;
+    // Option 1: Read from environment variable (for Vercel/production)
+    const serviceAccountJson = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
+    if (serviceAccountJson) {
+        try {
+            const serviceAccount = JSON.parse(serviceAccountJson);
+            return admin.initializeApp({
+                credential: admin.credential.cert(serviceAccount),
+            });
+        } catch (error) {
+            console.error("Error parsing FIREBASE_SERVICE_ACCOUNT_JSON:", error);
+            // Fallthrough to next option
+        }
+    }
 
+    // Option 2: Read from file path (for local development)
+    const serviceAccountPath = process.env.FIREBASE_SERVICE_ACCOUNT_PATH;
     if (serviceAccountPath) {
         try {
             // Use process.cwd() to resolve relative paths correctly in Next.js
@@ -23,7 +35,7 @@ function getFirebaseApp(): admin.app.App {
                 credential: admin.credential.cert(serviceAccount),
             });
         } catch (error) {
-            console.error("Error loading Firebase service account:", error);
+            console.error("Error loading Firebase service account file:", error);
             // Fallthrough to default credentials if file load fails
         }
     }
