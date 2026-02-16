@@ -1,0 +1,11 @@
+[
+  {
+    "id": "a24999fb-cf1a-409e-9fb1-974020ebfca3",
+    "timestamp": "2026-02-16T18:35:44.920Z",
+    "type": "scheduled",
+    "notificationId": "44317a00-ecf8-48c1-9084-ce80f8b9eba8",
+    "notificationTitle": "عن دخول شهر رمضان:",
+    "status": "success",
+    "message": "تم إرسال الإشعار المجدول \"عن دخول شهر رمضان:\" بنجاح"
+  }
+]

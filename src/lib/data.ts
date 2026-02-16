@@ -8,6 +8,7 @@ export interface Hadith {
     source: string;
     date: string;
     createdAt: string;
+    sentAt?: string;
 }
 
 export interface Notification {
@@ -21,6 +22,18 @@ export interface Notification {
     recurringTime?: string;
     active: boolean;
     createdAt: string;
+    sentAt?: string;
+    lastSentAt?: string;
+}
+
+export interface CronLog {
+    id: string;
+    timestamp: string;
+    type: "scheduled" | "recurring" | "hadith" | "system";
+    notificationId?: string;
+    notificationTitle?: string;
+    status: "success" | "error";
+    message: string;
 }
 
 const DATA_DIR = path.join(process.cwd(), "data");
@@ -66,4 +79,21 @@ export async function getNotifications(): Promise<Notification[]> {
 
 export async function saveNotifications(notifications: Notification[]): Promise<void> {
     return writeJSON("notifications.json", notifications);
+}
+
+export async function getCronLogs(): Promise<CronLog[]> {
+    return readJSON<CronLog>("cron-logs.json");
+}
+
+export async function saveCronLog(log: CronLog): Promise<void> {
+    const logs = await getCronLogs();
+    logs.unshift(log);
+    if (logs.length > 200) {
+        logs.length = 200;
+    }
+    return writeJSON("cron-logs.json", logs);
+}
+
+export async function clearCronLogs(): Promise<void> {
+    return writeJSON("cron-logs.json", []);
 }

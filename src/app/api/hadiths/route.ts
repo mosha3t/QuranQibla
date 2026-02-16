@@ -24,7 +24,8 @@ export async function POST(request: Request) {
         await saveHadiths(hadiths);
 
         return NextResponse.json(newHadith, { status: 201 });
-    } catch {
+    } catch (error) {
+        console.error("[API] Error adding hadith:", error);
         return NextResponse.json({ error: "خطأ في إضافة الحديث" }, { status: 500 });
     }
 }

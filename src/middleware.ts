@@ -6,7 +6,7 @@ const SECRET = new TextEncoder().encode(
     process.env.JWT_SECRET || "fallback-secret"
 );
 
-const PUBLIC_PATHS = ["/login", "/api/auth"];
+const PUBLIC_PATHS = ["/login", "/api/auth", "/api/cron"];
 
 export async function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;

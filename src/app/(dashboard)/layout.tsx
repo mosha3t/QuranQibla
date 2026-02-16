@@ -7,6 +7,7 @@ import Link from "next/link";
 const NAV_ITEMS = [
     { href: "/hadiths", label: "الأحاديث", icon: "📖" },
     { href: "/notifications", label: "الإشعارات", icon: "🔔" },
+    { href: "/cron-logs", label: "سجل المهام", icon: "📋" },
 ];
 
 export default function DashboardLayout({
@@ -61,8 +62,8 @@ export default function DashboardLayout({
                                 href={item.href}
                                 onClick={() => setSidebarOpen(false)}
                                 className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${isActive
-                                        ? "bg-gold-600/15 text-gold-500 border border-border-gold"
-                                        : "text-text-secondary hover:bg-bg-card-hover hover:text-text-primary"
+                                    ? "bg-gold-600/15 text-gold-500 border border-border-gold"
+                                    : "text-text-secondary hover:bg-bg-card-hover hover:text-text-primary"
                                     }`}
                             >
                                 <span className="text-lg">{item.icon}</span>
