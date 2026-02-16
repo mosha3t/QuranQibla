@@ -39,10 +39,17 @@ export async function POST(request: Request) {
                 console.log("[API] FCM notification sent successfully");
             } catch (fcmError) {
                 console.error("[API] FCM send failed:", fcmError);
-                // Still save the notification even if FCM fails
+                // Still try to save the notification even if FCM fails
                 // but report the error to the client
                 notifications.unshift(newNotification);
-                await saveNotifications(notifications);
+                try {
+                    await saveNotifications(notifications);
+                } catch (storageError) {
+                    console.error(
+                        "[API] Failed to persist notification after FCM error:",
+                        storageError
+                    );
+                }
                 return NextResponse.json(
                     {
                         ...newNotification,
@@ -54,7 +61,25 @@ export async function POST(request: Request) {
         }
 
         notifications.unshift(newNotification);
-        await saveNotifications(notifications);
+        try {
+            await saveNotifications(notifications);
+        } catch (storageError) {
+            // On platforms like Vercel, the filesystem may be read-only or ephemeral.
+            // We don't want to fail the whole request if persistence fails,
+            // since the push notification itself may have been sent successfully.
+            console.error(
+                "[API] Failed to persist notification after send:",
+                storageError
+            );
+            return NextResponse.json(
+                {
+                    ...newNotification,
+                    storageError:
+                        "تم إرسال الإشعار بنجاح لكن تعذّر حفظه في السجل (تخزين غير متاح على الخادم).",
+                },
+                { status: 207 }
+            );
+        }
 
         return NextResponse.json(newNotification, { status: 201 });
     } catch (error) {
