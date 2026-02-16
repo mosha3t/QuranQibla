@@ -1,0 +1,26 @@
+name: Trigger Cron Job
+
+on:
+  schedule:
+    - cron: '*/5 * * * *' # Run every 5 minutes
+  workflow_dispatch: # Allow manual trigger from GitHub Actions tab
+
+jobs:
+  cron:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Vercel Cron
+        run: |
+          # The URL is pulled from secrets. You must set VERCEL_APP_URL in repo secrets.
+          # Example value: https://your-project.vercel.app
+          
+          if [ -z "${{ secrets.VERCEL_APP_URL }}" ]; then
+            echo "Error: VERCEL_APP_URL secret is missing in GitHub Settings > Secrets"
+            exit 1
+          fi
+
+          echo "Triggering Cron Job at ${{ secrets.VERCEL_APP_URL }}/api/cron..."
+          
+          curl -s -o /dev/null -w "%{http_code}" -X GET "${{ secrets.VERCEL_APP_URL }}/api/cron" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            --fail
